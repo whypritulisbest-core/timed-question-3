@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timed Mystery Question</title>
+    <style>
+        * { 
+            box-sizing: border-box; 
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #111;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        #questionBox {
+            width: 90%;
+            max-width: 800px;
+            padding: 20px;
+        }
+
+        #question {
+            font-size: clamp(24px, 4vw, 42px);
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+
+        #timer {
+            font-size: clamp(50px, 10vw, 80px);
+            font-weight: bold;
+            color: #ff3333;
+            margin-bottom: 25px;
+            font-family: monospace;
+        }
+
+        #location {
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 20px;
+        }
+
+        #locationTitle {
+            font-size: 18px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+
+        #locationText {
+            font-size: 22px;
+            line-height: 1.5;
+            color: #fff;
+        }
+
+        #expired {
+            display: none;
+            font-size: 35px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="questionBox">
+        <div id="question">
+            You work as a servant in a wealthy house, and you respect your master, or “Malik,” very much. One stormy night, your master is found dead, apparently killed by a magnetic sword. Everyone suspects you because you were the last person seen near him.
+            <br><br>
+            But who is the real murderer, and how did your master die?
+        </div>
+
+        <div id="timer">1:00</div>
+
+        <div id="location">
+            <div id="locationTitle">Next Location</div>
+            <div id="locationText">
+                Do not search the next location. Search the place where you recorded the last one.
+            </div>
+        </div>
+    </div>
+
+    <div id="expired">
+        <h1>Time's Up!</h1>
+    </div>
+
+    <script>
+        let timeLeft = 60;
+
+        const timer = document.getElementById("timer");
+        const questionBox = document.getElementById("questionBox");
+        const expired = document.getElementById("expired");
+
+        const countdown = setInterval(() => {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = String(timeLeft % 60).padStart(2, "0");
+
+            timer.textContent = `${minutes}:${seconds}`;
+
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                questionBox.style.display = "none";
+                expired.style.display = "block";
+                return;
+            }
+
+            timeLeft--;
+        }, 1000);
+
+        // Protection features against easy copying/inspecting
+        document.addEventListener("contextmenu", e => e.preventDefault());
+        document.addEventListener("selectstart", e => e.preventDefault());
+        document.addEventListener("dragstart", e => e.preventDefault());
+
+        document.addEventListener("keydown", e => {
+            const k = e.key.toLowerCase();
+            if (
+                (e.ctrlKey && ["c", "x", "s", "u", "p"].includes(k)) ||
+                (e.ctrlKey && e.shiftKey && ["i", "j", "c"].includes(k)) ||
+                k === "f12"
+            ) {
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden && timeLeft > 0) {
+                questionBox.style.visibility = "hidden";
+            } else if (timeLeft > 0) {
+                questionBox.style.visibility = "visible";
+            }
+        });
+    </script>
+
+</body>
+</html>
